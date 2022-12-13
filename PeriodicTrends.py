@@ -63,26 +63,44 @@ def setup():
         print(string + "\u001b[0m")
 
     alreadyHaveTrends = exists('trends.txt')
-    if alreadyHaveTrends == False:
-        import requests
-        title("Downloading 'trends.txt' (required)...")
-        print("Downloading 'trends.txt' (required)...")
-        url = "https://pastebin.com/raw/Xzcv9S4d"
-        try:
-            time.sleep(4)
-            request = requests.get(url)
+    def checkTrends():
+        if alreadyHaveTrends == False:
+            import requests
+            title("Downloading 'trends.txt' (required)...")
+            print("Downloading 'trends.txt' (required)...")
+            url = "https://raw.githubusercontent.com/CyberedCake/PeriodicTrends/main/trends.txt"
+            try:
+                request = requests.get(url)
 
-            with open('trends.txt', 'wb') as file:
-                file.write(request.content)
+                with open('trends.txt', 'wb') as file:
+                    file.write(request.content)
 
-            print("Successfully downloaded 'trends.txt'... launching program!")
-            title()
-        except Exception as err:
-            exception = str(err)
-            printF("&cAn exception occurred: &8" + exception)
-            printF(" ")
-            input("Press enter to close")
-            exit()
+                print("Successfully downloaded 'trends.txt'... launching program!")
+                title()
+            except Exception as err:
+                exception = str(err)
+                button = "Close program"
+                if(pyautogui == True):
+                    gui.alert("An error occurred: " + exception, "An exception occurred!", button)
+                printF("&cAn exception occurred: &8" + exception)
+                printF(" ")
+                alert = pyautogui.confirm(str(exception) + "\n\nCheck your connection or try again later.\n\nSelect an option for what the program should do next:", "An exception occurred!", buttons=['Try again', 'Download manually', 'Restart program', 'Close program'])
+                if(alert == "Try again"):
+                    checkTrends()
+                    return
+                elif(alert == "Restart program"):
+                    printF(" ")
+                    printF("&aRebooting program, please wait...")
+                    os.system("title Rebooting program, please wait...")
+                    os.startfile(__file__)
+                elif(alert == "Download manually"):
+                    browser.open("https://github.com/CyberedCake/PeriodicTrends/tree/main/trends")
+                    printF(" ")
+                    printF("&aOpening web browser...")
+                    time.sleep(5)
+                    checkTrends()
+                    return
+                exit()
 
     file = open('trends.txt', 'r')
     if("PERIODIC TRENDS" not in file.readline()):
